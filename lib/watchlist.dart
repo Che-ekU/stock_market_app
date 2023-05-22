@@ -56,48 +56,63 @@ class WatchListHome extends StatelessWidget {
         ),
         title: const AppBarSearchField(),
       ),
-      body: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 0),
-            child: Align(
-                alignment: Alignment.centerRight,
-                child: Icon(Icons.notifications_active)),
-          ),
-          const Text(
-            "Nifty 50",
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 3),
-          const Text(
-            "25,355.80",
-            style: TextStyle(
-              color: Colors.green,
-              fontSize: 30,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 1),
-          RichText(
-            text: const TextSpan(
-              text: "+13.00(",
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            toolbarHeight: 325,
+            title: Column(
               children: [
-                TextSpan(text: "+0.12%", style: TextStyle(color: Colors.green)),
-                TextSpan(text: ")"),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 0),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Icon(
+                      Icons.notifications_active,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const Text(
+                  "Nifty 50",
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                const Text(
+                  "25,355.80",
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 1),
+                RichText(
+                  text: const TextSpan(
+                    text: "+13.00(",
+                    children: [
+                      TextSpan(
+                          text: "+0.12%",
+                          style: TextStyle(color: Colors.green)),
+                      TextSpan(text: ")"),
+                    ],
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const _Graph(),
+                const SizedBox(height: 25),
               ],
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
             ),
           ),
-          const Expanded(flex: 3, child: _Graph()),
-          const Expanded(flex: 4, child: StockBottomSection()),
         ],
+        body: const StockBottomSection(),
       ),
     );
   }
@@ -123,60 +138,159 @@ class StockBottomSection extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 80.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: ["Stocks", "More active stocks"]
-                .map(
-                  (e) => Column(
+            children: [
+              ...["Stocks", "Most active stocks"].map(
+                (e) => Column(
+                  children: [
+                    _HeaderRow(title: e),
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Column(
+                        children: [
+                          for (int i = 0; i < 4; i++) const StockCard(),
+                        ],
+                      ),
+                    ),
+                    if (e == "Stocks")
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 3.0),
+                        child: Divider(),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              const _HeaderRow(title: "Recently Visited Stocks"),
+              // const SizedBox(height: 10),
+              Container(
+                margin: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x0f101828),
+                      blurRadius: 3,
+                      offset: Offset(0, 1),
+                    ),
+                    BoxShadow(
+                      color: Color(0x19101828),
+                      blurRadius: 5,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
+                  color:
+                      const Color.fromARGB(255, 245, 247, 255).withOpacity(0.9),
+                ),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              e,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 19),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) {
-                                    return const AllStocks();
-                                  },
-                                ));
-                              },
-                              child: const Text(
-                                "See all",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    color: Colors.blue),
+                      for (int i = 0; i < 4; i++)
+                        Padding(
+                          padding: EdgeInsets.only(right: i != 3 ? 15.0 : 0),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 3,
+                                margin: const EdgeInsets.only(right: 4.5),
+                                height: 45,
+                                color: i % 2 == 0 ? Colors.red : Colors.green,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Column(
-                          children: [
-                            for (int i = 0; i < 4; i++) const StockCard(),
-                          ],
-                        ),
-                      ),
-                      if (e == "Stocks")
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 3.0),
-                          child: Divider(),
-                        ),
-                    ],
-                  ),
-                )
-                .toList(),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "TCS",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    "2126.33",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: i % 2 == 0
+                                          ? Colors.red
+                                          : Colors.green,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: "+13.00 (",
+                                      children: [
+                                        TextSpan(
+                                            text: "+0.12%",
+                                            style: TextStyle(
+                                              color: i % 2 == 0
+                                                  ? Colors.red
+                                                  : Colors.green,
+                                              fontSize: 10,
+                                            )),
+                                        const TextSpan(text: ")"),
+                                      ],
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        )
+                    ]),
+              ),
+            ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _HeaderRow extends StatelessWidget {
+  const _HeaderRow({
+    required this.title,
+  });
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (context) {
+                  return const AllStocks();
+                },
+              ));
+            },
+            child: const Text(
+              "See all",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Colors.blue),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -404,84 +518,80 @@ class StockCard extends StatelessWidget {
         ],
         color: const Color.fromARGB(255, 245, 247, 255).withOpacity(0.9),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: Row(
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                  color: Colors.amber.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(6)),
-              child: const SizedBox(height: 40, width: 40),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  "AXISBANK",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  "Axis",
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ],
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: DecoratedBox(
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(6)),
-                child: SizedBox(
-                  height: 40,
-                  child: LineChartWidget(
-                    context.read<AppProvider>().getChartData(Random()),
-                  ),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Row(
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+                color: Colors.amber.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(6)),
+            child: const SizedBox(height: 40, width: 40),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text(
+                "AXISBANK",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "Axis",
+                style: TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: DecoratedBox(
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
+              child: SizedBox(
+                height: 40,
+                child: LineChartWidget(
+                  context.read<AppProvider>().getChartData(Random()),
                 ),
               ),
             ),
-            const SizedBox(
-              width: 15,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "2126.33",
+          ),
+          const SizedBox(
+            width: 15,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "2126.33",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              RichText(
+                text: const TextSpan(
+                  text: "+13.00 (",
+                  children: [
+                    TextSpan(
+                        text: "+0.12%", style: TextStyle(color: Colors.green)),
+                    TextSpan(text: ")"),
+                  ],
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                RichText(
-                  text: const TextSpan(
-                    text: "+13.00 (",
-                    children: [
-                      TextSpan(
-                          text: "+0.12%",
-                          style: TextStyle(color: Colors.green)),
-                      TextSpan(text: ")"),
-                    ],
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
